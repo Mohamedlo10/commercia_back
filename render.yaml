@@ -33,7 +33,7 @@ services:
           property: connectionString
 
       - key: BACKEND_CORS_ORIGINS
-        value: '["*"]'  # À remplacer
+        value: '*'  # Accept all origins; in production prefer explicit list
 
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
         value: 10080  # 7 jours

@@ -46,11 +46,27 @@ async def init_db():
     try:
         async with engine.begin() as conn:
             # Test de connexion
-            await conn.execute("SELECT 1")
+            from sqlalchemy import text
+            await conn.execute(text("SELECT 1"))
         print("✅ Connexion à la base de données établie")
     except Exception as e:
-        print(f"❌ Erreur de connexion à la base de données: {e}")
-        raise
+        # Ne pas crasher l'app si la DB n'est pas accessible au démarrage
+        print(f"⚠️ Avertissement: Connexion à la base de données échouée: {e}")
+        print("⚠️ L'application démarre quand même. La DB sera vérifiée au premier appel.")
+
+
+async def check_db_connection() -> bool:
+    """
+    Vérifie si la connexion à la base de données est active
+    Retourne True si connectée, False sinon
+    """
+    try:
+        async with engine.begin() as conn:
+            from sqlalchemy import text
+            await conn.execute(text("SELECT 1"))
+        return True
+    except Exception:
+        return False
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:

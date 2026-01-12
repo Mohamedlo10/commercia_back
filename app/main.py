@@ -10,7 +10,7 @@ from contextlib import asynccontextmanager
 import time
 
 from app.core.config import settings
-from app.core.database import engine, init_db
+from app.core.database import engine, init_db, check_db_connection
 from app.api.v1.api import api_router
 
 
@@ -80,11 +80,23 @@ async def global_exception_handler(request: Request, exc: Exception):
 # Routes de santé
 @app.get("/health", tags=["Health"])
 async def health_check():
-    """Vérification de l'état de l'API"""
+    """Vérification de l'état de l'API (ne vérifie pas la DB)"""
     return {
         "status": "healthy",
         "service": settings.PROJECT_NAME,
         "version": "1.0.0"
+    }
+
+
+@app.get("/health/ready", tags=["Health"])
+async def readiness_check():
+    """Vérification complète incluant la base de données"""
+    db_connected = await check_db_connection()
+    return {
+        "status": "ready" if db_connected else "degraded",
+        "service": settings.PROJECT_NAME,
+        "version": "1.0.0",
+        "database": "connected" if db_connected else "disconnected"
     }
 
 
