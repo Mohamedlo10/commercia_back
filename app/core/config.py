@@ -37,8 +37,8 @@ class Settings(BaseSettings):
     ]
 
     # Supabase (optionnel si besoin du client Supabase)
-    SUPABASE_URL: Optional[str] = None
-    SUPABASE_KEY: Optional[str] = None
+    #SUPABASE_URL: Optional[str] = None
+    #SUPABASE_KEY: Optional[str] = None
 
     # Email (pour notifications futures)
     SMTP_HOST: Optional[str] = None
