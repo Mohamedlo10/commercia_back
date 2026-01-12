@@ -26,10 +26,10 @@ class Settings(BaseSettings):
 
     # Database PostgreSQL (Supabase)
     DATABASE_URL: str
-    DATABASE_POOL_SIZE: int = 20
-    DATABASE_MAX_OVERFLOW: int = 10
+    DATABASE_POOL_SIZE: int = 3  # Réduit pour plan starter Render
+    DATABASE_MAX_OVERFLOW: int = 2
     DATABASE_POOL_TIMEOUT: int = 30
-    DATABASE_POOL_RECYCLE: int = 3600
+    DATABASE_POOL_RECYCLE: int = 1800
 
     # CORS
     BACKEND_CORS_ORIGINS: Union[List[str], str] = [
