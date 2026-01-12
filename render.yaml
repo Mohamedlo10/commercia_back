@@ -10,7 +10,7 @@ services:
     startCommand: gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
 
     # Source
-    repo: https://github.com/votre-organisation/commercia  # À remplacer
+    repo: https://github.com/Mohamedlo10/commercia_back.git  # À remplacer
     branch: main
 
     # Health check
@@ -33,7 +33,7 @@ services:
           property: connectionString
 
       - key: BACKEND_CORS_ORIGINS
-        value: '["https://votre-frontend.vercel.app"]'  # À remplacer
+        value: '["*"]'  # À remplacer
 
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
         value: 10080  # 7 jours

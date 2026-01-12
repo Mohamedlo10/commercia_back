@@ -4,8 +4,10 @@ Gère toutes les variables d'environnement et paramètres
 """
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import List, Optional
+from typing import List, Optional, Union
+from pydantic import field_validator
 import secrets
+import json
 
 
 class Settings(BaseSettings):
@@ -30,11 +32,26 @@ class Settings(BaseSettings):
     DATABASE_POOL_RECYCLE: int = 3600
 
     # CORS
-    BACKEND_CORS_ORIGINS: List[str] = [
+    BACKEND_CORS_ORIGINS: Union[List[str], str] = [
         "http://localhost:3000",
         "http://localhost:5173",
         "http://localhost:8000",
     ]
+    
+    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, v):
+        """Parse CORS origins from JSON string or return as-is if already a list"""
+        if isinstance(v, str):
+            # Si c'est "*", autoriser toutes les origines
+            if v.strip() == "*":
+                return ["*"]
+            try:
+                return json.loads(v)
+            except json.JSONDecodeError:
+                # Si c'est une seule URL, la retourner dans une liste
+                return [v]
+        return v
 
     # Supabase (optionnel si besoin du client Supabase)
     #SUPABASE_URL: Optional[str] = None
