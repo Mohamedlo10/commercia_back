@@ -164,19 +164,67 @@ Une fois l'application démarrée, accédez à :
 
 ### Endpoints principaux
 
-#### Authentification
+#### 🔐 Authentification
 - `POST /api/v1/auth/login` - Connexion
 - `POST /api/v1/auth/register` - Inscription
 - `GET /api/v1/auth/me` - Utilisateur actuel
 - `POST /api/v1/auth/change-password` - Changer mot de passe
 
-#### À venir
-- `/api/v1/products` - Gestion des produits
-- `/api/v1/orders` - Gestion des commandes
-- `/api/v1/clients` - Gestion des clients
+#### 📦 Catégories (✅ Disponible)
+- `POST /api/v1/categories/` - Créer une catégorie
+- `GET /api/v1/categories/` - Lister les catégories (pagination + filtres)
+- `GET /api/v1/categories/tree` - Arbre hiérarchique complet
+- `GET /api/v1/categories/{id}` - Détails d'une catégorie
+- `PUT /api/v1/categories/{id}` - Mettre à jour
+- `DELETE /api/v1/categories/{id}` - Supprimer
+- `GET /api/v1/categories/{id}/stats` - Statistiques
+
+#### 🛍️ Produits (✅ Disponible)
+- `POST /api/v1/products/` - Créer un produit
+- `GET /api/v1/products/` - Lister les produits (pagination + filtres avancés)
+- `GET /api/v1/products/{id}` - Détails d'un produit avec relations
+- `PUT /api/v1/products/{id}` - Mettre à jour
+- `DELETE /api/v1/products/{id}` - Supprimer
+- `POST /api/v1/products/{id}/duplicate` - Dupliquer un produit
+- `PATCH /api/v1/products/{id}/toggle-active` - Activer/Désactiver
+- `POST /api/v1/products/{id}/variants` - Créer une variante
+- `GET /api/v1/products/{id}/variants` - Lister les variantes
+- `PUT /api/v1/products/{id}/variants/{variant_id}` - Modifier variante
+- `DELETE /api/v1/products/{id}/variants/{variant_id}` - Supprimer variante
+
+#### 👥 Clients (✅ Disponible)
+- `POST /api/v1/clients/` - Créer un client
+- `GET /api/v1/clients/` - Lister les clients (pagination + filtres)
+- `GET /api/v1/clients/search` - Recherche rapide (autocomplete)
+- `GET /api/v1/clients/{id}` - Détails avec statistiques
+- `PUT /api/v1/clients/{id}` - Mettre à jour
+- `DELETE /api/v1/clients/{id}` - Supprimer
+- `POST /api/v1/clients/{id}/loyalty/adjust` - Ajuster points fidélité
+- `POST /api/v1/clients/{id}/loyalty/redeem` - Calculer réduction
+- `POST /api/v1/clients/{id}/debt/pay` - Paiement de dette
+- `GET /api/v1/clients/{id}/stats` - Statistiques détaillées
+- `PATCH /api/v1/clients/{id}/toggle-active` - Activer/Désactiver
+
+#### 📊 Gestion du Stock (✅ Disponible)
+- `POST /api/v1/stock/movements` - Créer un mouvement manuel
+- `GET /api/v1/stock/movements` - Lister les mouvements
+- `GET /api/v1/stock/movements/{product_id}/history` - Historique produit
+- `POST /api/v1/stock/adjust` - Ajuster le stock (inventaire)
+- `GET /api/v1/stock/current` - État actuel du stock
+- `GET /api/v1/stock/low-stock` - Alertes stock faible
+- `GET /api/v1/stock/summary` - Résumé global
+
+#### 📄 Documentation complète
+Consultez [docs/API.md](docs/API.md) pour la documentation détaillée de tous les endpoints.
+
+#### 🚧 À venir
+- `/api/v1/orders` - Gestion des commandes/ventes
+- `/api/v1/transactions` - Transactions et paiements
 - `/api/v1/cash-register` - Gestion de caisse
 - `/api/v1/reservations` - Réservations et locations
 - `/api/v1/reports` - Rapports et statistiques
+- `/api/v1/employees` - Gestion des employés
+- `/api/v1/suppliers` - Gestion des fournisseurs
 
 ## Structure du projet
 

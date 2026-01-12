@@ -1,0 +1,53 @@
+services:
+  # API Backend FastAPI
+  api:
+    build: .
+    container_name: commercia-api
+    ports:
+      - "8000:8000"
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    environment:
+      - DEBUG=true
+      - ENVIRONMENT=development
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-key-change-in-production}
+      - BACKEND_CORS_ORIGINS=*
+    env_file:
+      - .env
+    volumes:
+      # Hot reload en développement
+      - ./app:/app/app:ro
+      - ./tests:/app/tests:ro
+      - ./pytest.ini:/app/pytest.ini:ro
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # PostgreSQL local (optionnel si vous utilisez Supabase)
+  # db:
+  #   image: postgres:15-alpine
+  #   container_name: commercia-db
+  #   environment:
+  #     POSTGRES_USER: commercia
+  #     POSTGRES_PASSWORD: commercia123
+  #     POSTGRES_DB: commercia
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #     - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U commercia"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+# volumes:
+#   postgres_data:

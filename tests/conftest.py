@@ -5,16 +5,25 @@ Fixtures partagées pour les tests
 
 import pytest
 import asyncio
+import os
 from typing import AsyncGenerator
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from dotenv import load_dotenv
 
 from app.main import app
 from app.core.database import Base, get_db
 from app.core.config import settings
 
-# URL de la base de données de test (différente de la production)
-TEST_DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/commercia_test"
+# Charger les variables d'environnement
+load_dotenv()
+
+# Utiliser la DB de production depuis .env (convertir postgresql:// en postgresql+asyncpg://)
+DATABASE_URL = os.getenv("DATABASE_URL", "")
+if DATABASE_URL.startswith("postgresql://"):
+    TEST_DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+else:
+    TEST_DATABASE_URL = DATABASE_URL
 
 
 @pytest.fixture(scope="session")
@@ -30,15 +39,8 @@ async def test_engine():
     """Crée un moteur de base de données pour les tests"""
     engine = create_async_engine(TEST_DATABASE_URL, echo=True)
 
-    # Créer toutes les tables
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
+    # Ne pas créer/supprimer les tables en production - elles existent déjà
     yield engine
-
-    # Supprimer toutes les tables après les tests
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
 
     await engine.dispose()
 
@@ -81,13 +83,10 @@ async def client(test_db) -> AsyncGenerator[AsyncClient, None]:
 
 
 @pytest.fixture
-async def test_user(test_db):
-    """Crée un utilisateur de test"""
-    from app.models.user import User
+async def test_store(test_db):
+    """Crée un magasin de test"""
     from app.models.store import Store
-    from app.core.security import get_password_hash
 
-    # Créer un magasin de test
     store = Store(
         name="Test Store",
         currency="XOF",
@@ -97,12 +96,21 @@ async def test_user(test_db):
     await test_db.commit()
     await test_db.refresh(store)
 
+    return store
+
+
+@pytest.fixture
+async def test_user(test_db, test_store):
+    """Crée un utilisateur de test"""
+    from app.models.user import User
+    from app.core.security import get_password_hash
+
     # Créer un utilisateur de test
     user = User(
         email="test@commercia.com",
         password_hash=get_password_hash("password123"),
         role="admin",
-        store_id=store.id,
+        store_id=test_store.id,
         is_active=True
     )
     test_db.add(user)
